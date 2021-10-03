@@ -1,5 +1,6 @@
-import dash_core_components as dcc
-import dash_html_components as html
+import dash
+from dash import dcc
+from dash import html
 from dash.dependencies import Input, Output
 import plotly.express as px 
 import pandas as pd
@@ -13,7 +14,7 @@ df = df[['Entity','Year','Total_deaths']]
 
 layout = html.Div([
 
-    html.H2("Drug abuse related total deaths per 100,000 people in Africa", style={'text-align': 'center'}),
+    html.H2("Drug abuse related deaths per 100,000 people in Africa", style={'text-align': 'center'}),
 
     dcc.Dropdown(id="slct_year",
                  options=[
@@ -25,7 +26,7 @@ layout = html.Div([
                      {"label": "2015", "value": 2015}],
                  multi=False,
                  value=2015,
-                 style={'width': "40%"}
+                 style={'width': "60%"}
                  ),
 
     html.Div(id='output_container', children=[]),
@@ -44,7 +45,7 @@ def update_graph(option_slctd):
     # print(option_slctd)
     print(type(option_slctd))
 
-    container = "The year chosen by user was: {}".format(option_slctd)
+    container = "Total deaths per country in: {}".format(option_slctd)
 
     dff = df.copy()
     dff = dff[dff["Year"] == option_slctd]

@@ -1,34 +1,49 @@
-import dash_core_components as dcc
-import dash_html_components as html
-from dash.dependencies import Input, Output
+
+import dash
+from dash import dcc
+from dash import html
 import plotly.graph_objs as go
+import plotly.express as px
+import seaborn as sns
+import matplotlib.pyplot as plt
 import pandas as pd
 
-
-from app import app
-
-df = pd.read_excel("https://github.com/chris1610/pbpython/blob/master/data/salesfunnel.xlsx?raw=True")
-pv = pd.pivot_table(df, index=['Name'], columns=["Status"], values=['Quantity'], aggfunc=sum, fill_value=0)
-
-trace1 = go.Bar(x=pv.index, y=pv[('Quantity', 'declined')], name='Declined')
-trace2 = go.Bar(x=pv.index, y=pv[('Quantity', 'pending')], name='Pending')
-trace3 = go.Bar(x=pv.index, y=pv[('Quantity', 'presented')], name='Presented')
-trace4 = go.Bar(x=pv.index, y=pv[('Quantity', 'won')], name='Won')
-
-layout = html.Div(children=[
-    html.H1(children='Sales Funnel Report'),
-    html.Div(children='''National Sales Funnel Report.'''),
-    dcc.Graph(
-        id='example-graph',
-        figure={
-            'data': [trace1, trace2, trace3, trace4],
-            'layout':
-            go.Layout(title='Order Status by Customer', barmode='stack')
-        })
+# df = pd.read_csv("data\combined_data.csv")
+# df['Total_deaths'] = df['Death_Illicit_drugs']+df['Death_Opioid']+df['Death_Alchohol']+df['Death_Other_drugs']+df['Death_Amphetamine']
+# df = df[['Entity','Year','Total_deaths']]
+# df_2015=(df[df['Year']==2015])
+# df_2015 = df_2015[['Entity','Total_deaths']]
+Gender_depression_df= pd.read_csv('data/Clean_Gender_depression.csv')
+data = [Gender_depression_df['%_Depressive_disorders_males'].mean(), Gender_depression_df['%_Depressive_disorders_females'].mean()]
+labels = ['Males', 'Females']
+#define Seaborn color palette to use
+colors = sns.color_palette('pastel')[0:5]
+#create pie chart
+fig = plt.pie(data, labels = labels, colors = colors, autopct='%.0f%%')
+plt.title('Gender Most Affected by Depressive Disorders')
+# country = list(df['Entity'])
+# deaths = list(df['Total_deaths'])
+# print(deaths)
+df = px.data.tips()
+print(df)
+# fig1 = px.bar(df, x="Entity", y="Total_deaths", color="Entity")
+#fig = go.Figure(data=[go.histogram(x=country, y=deaths)])
+layout = html.Div([
+    html.P("Names:"),
+    dcc.Dropdown(
+        id='names', 
+        value='day', 
+        options=[{'value': x, 'label': x} 
+                 for x in ['smoker', 'day', 'time', 'sex']],
+        clearable=False
+    ),
+    html.P("Values:"),
+    dcc.Dropdown(
+        id='values', 
+        value='total_bill', 
+        options=[{'value': x, 'label': x} 
+                 for x in ['total_bill', 'tip', 'size']],
+        clearable=False
+    ),
+    dcc.Graph(id="pie-chart"),
 ])
-
-# @app.callback(
-#     Output('app-2-display-value', 'children'),
-#     Input('app-2-dropdown', 'value'))
-# def display_value(value):
-#     return 'You have selected "{}"'.format(value)
